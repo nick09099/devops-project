@@ -15,5 +15,19 @@ jobs:
     - name: Build and Run Docker containers
       run: docker compose up --build -d
 
-    - name: Test API
-      run: curl http://localhost:8080/api/users
+    - name: Show logs
+      run: docker compose logs
+
+    - name: Wait for app
+      run: |
+        for i in {1..30}; do
+          if curl -f http://localhost:8080/api/users; then
+            echo "App is ready!"
+            exit 0
+          fi
+          echo "Waiting..."
+          sleep 5
+        done
+        docker compose logs
+        exit 1
+        
